@@ -11,6 +11,7 @@ keywords = ["irc", "bot"]
 
 [dependencies]
 irc = "0.11.3"
+log = "0.3"
+env_logger = "0.3.3"
 
 [dev-dependencies]
-env_logger = "0.3.3"

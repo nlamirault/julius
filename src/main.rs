@@ -12,16 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
+#[macro_use]
+extern crate log;
+extern crate env_logger;
 extern crate irc;
 
 use std::default::Default;
 use irc::client::prelude::*;
 
-mod version;
+mod bot;
 
 
 fn main() {
+    env_logger::init().unwrap();
+    info!("[julius] Starting");
     let config = Config {
         nickname: Some(format!("juliusbot")),
         alt_nicks: Some(vec![format!("juliusbot_"), format!("juliusbot__")]),
@@ -29,19 +33,6 @@ fn main() {
         channels: Some(vec![format!("#perave")]),
         .. Default::default()
     };
-    let server = IrcServer::from_config(config).unwrap();
-    server.identify().unwrap();
-    for message in server.iter() {
-        let message = message.unwrap(); // We'll just panic if there's an error.
-        print!("{}", message);
-        match message.command {
-            Command::PRIVMSG(ref target, ref msg) =>
-                if msg.contains("!version") {
-                    server.send_privmsg(target, &version::version()).unwrap();
-                } else if msg.contains("!help") {
-                    server.send_privmsg(target, "Julius -- An IRC bot").unwrap();
-                },
-            _ => (),
-        }
-    }
+    let bot = bot::Bot::new_from_config(config);
+    bot.run();
 }
