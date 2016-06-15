@@ -10,6 +10,7 @@ authors = ["Nicolas Lamirault <nicolas.lamirault@gmail.com>"]
 keywords = ["irc", "bot"]
 
 [dependencies]
+irc = "0.11.3"
 
 [dev-dependencies]
 env_logger = "0.3.3"
