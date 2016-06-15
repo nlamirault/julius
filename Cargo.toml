@@ -1,0 +1,15 @@
+[package]
+name = "julius"
+version = "0.1.0"
+description = "An IRC bot"
+readme = "README.md"
+documentation = "https://github.com/nlamirault/julius"
+repository = "https://github.com/nlamirault/julius"
+licence = "Apache 2"
+authors = ["Nicolas Lamirault <nicolas.lamirault@gmail.com>"]
+keywords = ["irc", "bot"]
+
+[dependencies]
+
+[dev-dependencies]
+env_logger = "0.3.3"
