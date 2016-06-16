@@ -1,3 +1,5 @@
+// Copyright (C) 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -20,12 +22,9 @@ pub struct Bot {
 }
 
 impl Bot {
-
     pub fn new_from_config(config: Config) -> Bot {
         let server = IrcServer::from_config(config).unwrap();
-        Bot {
-            server: server
-        }
+        Bot { server: server }
     }
 
     pub fn run(&self) {
@@ -33,7 +32,7 @@ impl Bot {
         for message in self.server.iter() {
             match message {
                 Ok(ok_msg) => self.handle_message(&ok_msg),
-                Err(e) => error!("error: {:?}", e)
+                Err(e) => error!("error: {:?}", e),
             }
         }
     }
@@ -43,10 +42,10 @@ impl Bot {
     }
 
 
-    fn handle_message(&self, msg: &Message){
+    fn handle_message(&self, msg: &Message) {
         debug!("Irc message{:?}", msg);
         match msg.command {
-            Command::PRIVMSG(ref target, ref msg) =>
+            Command::PRIVMSG(ref target, ref msg) => {
                 if msg.contains("!version") {
                     self.server.send_privmsg(target, "0.1.0").unwrap();
                 } else if msg.contains("!quit") {
@@ -55,11 +54,12 @@ impl Bot {
                     self.server.send_notice(target, r#"Julius -- An IRC bot"#).unwrap();
                     self.server.send_notice(target, r#"Commands"#).unwrap();
                     self.server.send_notice(target, r#"   !help : show this help"#).unwrap();
-                    self.server.send_notice(target, r#"   !version : show the bot version"#).unwrap();
-                },
+                    self.server
+                        .send_notice(target, r#"   !version : show the bot version"#)
+                        .unwrap();
+                }
+            }
             _ => (),
         }
     }
-
-
 }

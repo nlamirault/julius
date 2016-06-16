@@ -1,0 +1,10 @@
+#
+# Default configuration file for Julius
+#
+
+loglevel = "info"
+
+[irc]
+server = "irc.freenode.net"
+channels = ["#perave"]
+username = "juliusbot"
