@@ -64,15 +64,19 @@ impl Bot {
 
     fn handle_message(&self, msg: &Message) {
         debug!("Irc message{:?}", msg);
+        let nickname = self.server.current_nickname().to_owned();
+        let to_bot = nickname + ": ";
         match msg.command {
             Command::PRIVMSG(ref target, ref msg) => {
-                if msg.contains("!version") {
-                    self.server.send_privmsg(target, "0.1.0").unwrap();
-                } else if msg.contains("!quit") {
-                    self.quit();
-                } else if msg.contains("!help") {
-                    self.do_plugin("!help", target, msg.to_owned())
-                } else {
+                if msg.contains(&to_bot) {
+                    if msg.contains("!version") {
+                        self.server.send_privmsg(target, "0.1.0").unwrap();
+                    } else if msg.contains("!quit") {
+                        self.quit();
+                    } else if msg.contains("!help") {
+                        self.do_plugin("!help", target, msg.to_owned())
+                    } else {
+                    }
                 }
             }
             _ => (),
