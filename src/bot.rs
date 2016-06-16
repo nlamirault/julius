@@ -16,15 +16,24 @@ use irc::client::data::{Command, Config, Message};
 use irc::client::server::{IrcServer, Server};
 use irc::client::server::utils::ServerExt;
 
+use plugins::plugin::Plugin;
+use plugins::help::HelpPlugin;
 
 pub struct Bot {
     server: IrcServer,
+    plugins: Vec<Box<Plugin>>,
 }
 
 impl Bot {
     pub fn new_from_config(config: Config) -> Bot {
         let server = IrcServer::from_config(config).unwrap();
-        Bot { server: server }
+        let help_plugin = HelpPlugin::new();
+        let mut plugins: Vec<Box<Plugin>> = Vec::new();
+        plugins.push(Box::new(help_plugin));
+        Bot {
+            server: server,
+            plugins: plugins,
+        }
     }
 
     pub fn run(&self) {
@@ -41,6 +50,17 @@ impl Bot {
         self.server.send_quit("in tartiflette we trust").unwrap();
     }
 
+    fn do_plugin(&self, text: &str, target: &str, msg: String) {
+        if let Some(index) = self.plugins
+            .iter()
+            .position(|p| p.get_command() == text) {
+            self.plugins[index].handle_message(self.server.clone(), target, msg.to_owned());
+        } else {
+            self.server
+                .send_notice(target, r#"Invalid command. Try !help."#)
+                .unwrap();
+        }
+    }
 
     fn handle_message(&self, msg: &Message) {
         debug!("Irc message{:?}", msg);
@@ -51,12 +71,8 @@ impl Bot {
                 } else if msg.contains("!quit") {
                     self.quit();
                 } else if msg.contains("!help") {
-                    self.server.send_notice(target, r#"Julius -- An IRC bot"#).unwrap();
-                    self.server.send_notice(target, r#"Commands"#).unwrap();
-                    self.server.send_notice(target, r#"   !help : show this help"#).unwrap();
-                    self.server
-                        .send_notice(target, r#"   !version : show the bot version"#)
-                        .unwrap();
+                    self.do_plugin("!help", target, msg.to_owned())
+                } else {
                 }
             }
             _ => (),

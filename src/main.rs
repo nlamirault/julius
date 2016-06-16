@@ -28,6 +28,7 @@ use config::BotConfig;
 
 mod bot;
 mod config;
+mod plugins;
 
 fn cmd_irc(config: BotConfig) {
     let config = Config {
