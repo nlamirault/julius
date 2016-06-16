@@ -38,14 +38,24 @@ impl Bot {
         }
     }
 
+    fn quit(&self) {
+        self.server.send_quit("in tartiflette we trust").unwrap();
+    }
+
+
     fn handle_message(&self, msg: &Message){
         debug!("Irc message{:?}", msg);
         match msg.command {
             Command::PRIVMSG(ref target, ref msg) =>
                 if msg.contains("!version") {
                     self.server.send_privmsg(target, "0.1.0").unwrap();
+                } else if msg.contains("!quit") {
+                    self.quit();
                 } else if msg.contains("!help") {
-                    self.server.send_privmsg(target, "Julius -- An IRC bot").unwrap();
+                    self.server.send_notice(target, r#"Julius -- An IRC bot"#).unwrap();
+                    self.server.send_notice(target, r#"Commands"#).unwrap();
+                    self.server.send_notice(target, r#"   !help : show this help"#).unwrap();
+                    self.server.send_notice(target, r#"   !version : show the bot version"#).unwrap();
                 },
             _ => (),
         }
